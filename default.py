@@ -63,7 +63,7 @@ class LangPrefMan_Player(xbmc.Player) :
     
     def __init__ (self):
         xbmc.Player.__init__(self)
-        
+
     def onPlayBackStarted(self):
         if settings.service_enabled and settings.at_least_one_pref_on and self.isPlayingVideo():
             log(LOG_DEBUG, 'Playback started')
@@ -72,9 +72,22 @@ class LangPrefMan_Player(xbmc.Player) :
             if settings.delay > 0:
                 log(LOG_DEBUG, "Delaying preferences evaluation by {0} ms".format(settings.delay))
                 xbmc.sleep(settings.delay)
+            if settings.pause:
+                log(LOG_INFO, 'Pausing playback while evaluating preferences')
+                self.pause()
             log(LOG_DEBUG, 'Getting video properties')
             self.getDetails()
             self.evalPrefs()
+            # Seeking to the current time prevents the delay between ASS subtitles activation and actually showing up on screen
+            log(LOG_DEBUG, 'Force-loading ASS subtitles')
+            playtime = self.getTime()
+            self.seekTime(playtime)
+            if settings.pause:
+                log(LOG_INFO, 'Resuming Playback')
+                self.pause()
+
+    def onAVStarted(self):
+        onPlaybackStarted()
 
     def evalPrefs(self):
         # recognized filename audio or filename subtitle
@@ -126,7 +139,7 @@ class LangPrefMan_Player(xbmc.Player) :
                 if settings.turn_subs_off:
                     log(LOG_INFO, 'Subtitle: disabling subs' )
                     self.showSubtitles(False)
-            elif trackIndex >= 0:
+            elif trackIndex >= -1:
                 self.setSubtitleStream(trackIndex)
                 if settings.turn_subs_on:
                     log(LOG_INFO, 'Subtitle: enabling subs' )
@@ -146,7 +159,7 @@ class LangPrefMan_Player(xbmc.Player) :
                 if settings.turn_subs_off:
                     log(LOG_DEBUG, 'Subtitle: disabling subs' )
                     self.showSubtitles(False)
-            elif trackIndex >= 0:
+            elif trackIndex >= -1:
                 self.setSubtitleStream(trackIndex)
                 if settings.turn_subs_on:
                     log(LOG_DEBUG, 'Subtitle: enabling subs' )

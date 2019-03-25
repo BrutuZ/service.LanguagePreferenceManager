@@ -8,7 +8,7 @@
 		<setting id="useFilename" label="30116" type="bool" default="false"/>
 		<setting label="30117" type="text" id="filenameRegex" default="audiostream[_|.|-]*\d+|subtitle[_|.|-]*\d+" visible="false"/>
 		<setting id="delay" label="30112" type="number" default="300"/>
-		<setting id="pause" label="30109" type="bool" default="false" visible="false"/>
+		<setting id="pause" label="30109" type="bool" default="false" visible="true"/>
 	</category>
 	
 	<category label="30104">
